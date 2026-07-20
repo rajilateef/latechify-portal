@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +13,35 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Admin account for the Filament panel (/admin)
+        User::updateOrCreate(
+            ['email' => 'latechify2024@gmail.com'],
+            [
+                'name'       => 'Latechify Admin',
+                'first_name' => 'Latechify',
+                'last_name'  => 'Admin',
+                'password'   => Hash::make('password'),
+                'is_admin'   => true,
+            ]
+        );
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            SettingsSeeder::class,
+            MenuItemSeeder::class,
+            HeroSlideSeeder::class,
+            AdvertSeeder::class,
+            ServiceSeeder::class,
+            CourseSeeder::class,
+            TestimonialSeeder::class,
+            FaqSeeder::class,
+            AboutContentSeeder::class,
+            CohortSeeder::class,
+            PageSeeder::class,
+            BlogSeeder::class,
+            BenefitSeeder::class,
+            PartnerSeeder::class,
+            CertificateSeeder::class,
+            CourseCategorySeeder::class,
         ]);
     }
 }

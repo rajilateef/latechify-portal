@@ -1,66 +1,64 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Latechify Digital Hub
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+The Latechify Digital Hub marketing website, rebuilt on **Laravel 12 + Livewire 3 + Filament 3**.
+Every piece of content is editable from a Filament admin panel — courses, pricing, home‑page
+sections, testimonials, FAQs, legal pages, blog posts, and **advert fliers / promotions**.
 
-## About Laravel
+## Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Laravel 12** (PHP 8.2), **MySQL**
+- **Livewire 3** for the dynamic public forms (contact, apply/enrol, consultation, newsletter)
+- **Filament 3** admin panel at `/admin`
+- **Tailwind CSS v4** + Alpine.js (bundled with Livewire) + **Lucide** icons
+- **Paystack** for online course payments (with a bank‑transfer fallback)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Local setup
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```bash
+composer install
+npm install
+cp .env.example .env        # then set DB_* credentials
+php artisan key:generate
+php artisan migrate --seed  # creates schema + seeds all content + the admin user
+php artisan storage:link
+npm run build               # or `npm run dev` while developing
+php artisan serve
+```
 
-## Learning Laravel
+> If `npm install` skips dev dependencies, your shell has `NODE_ENV=production`.
+> Run `NODE_ENV=development npm install --include=dev`.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Admin panel
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- URL: **`/admin`**
+- Default login: **latechify2024@gmail.com** / **password**  (change the password after first login)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+The sidebar is grouped:
 
-## Laravel Sponsors
+| Group | Manage |
+|-------|--------|
+| **Home Page** | Hero slides, **Adverts & Fliers**, **Why Choose Us**, Testimonials, Stats, Cohort activities, **Partners & Logos** (technologies / accreditations / employers) |
+| **Courses & Services** | Courses (category, curriculum, highlights, FAQs, pricing features), Services |
+| **About & Content** | Milestones, Core values, Team, FAQs, Pages (Terms/Privacy/Cookies), Cookies, Blog posts, **Certificates** (for `/verify-certificate`) |
+| **Submissions** | Applications (+ payments), Contact messages, Consultations, Newsletter subscribers |
+| **Settings** | Site Settings (branding, contact, socials, **Paystack keys**, bank details, home copy, SEO) |
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Posting an advert flier (home page)
+**Admin → Home Page → Adverts & Fliers → New.** Upload the flier image, add a title, an optional
+link, choose the **placement** (home *section*, *pop‑up* on first visit, or *both*) and an optional
+schedule window. Active adverts appear immediately in the home "Latest Promotions" section and/or as
+a dismissible pop‑up.
 
-### Premium Partners
+### Enabling online payments
+**Admin → Settings → Site Settings → Payment** and paste your Paystack public/secret keys (or set
+`PAYSTACK_PUBLIC_KEY` / `PAYSTACK_SECRET_KEY` in `.env`). Until keys are set, the *Apply* flow
+automatically falls back to the bank‑transfer instructions (bank details are also set on that tab).
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## Tests
 
-## Contributing
+```bash
+php artisan test
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Covers: all public pages render, all admin panel pages render, and the contact/apply form flows
+(record creation, validation, Paystack fallback).

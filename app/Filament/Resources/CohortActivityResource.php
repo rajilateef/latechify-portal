@@ -1,0 +1,95 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use App\Filament\Resources\CohortActivityResource\Pages;
+use App\Models\CohortActivity;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+
+class CohortActivityResource extends Resource
+{
+    protected static ?string $model = CohortActivity::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-users';
+
+    protected static ?string $navigationGroup = 'Home Page';
+
+    protected static ?int $navigationSort = 5;
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\Section::make('Activity')
+                    ->schema([
+                        Forms\Components\TextInput::make('title')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('icon')
+                            ->maxLength(255)
+                            ->helperText('Lucide icon name, e.g. Code')
+                            ->default('Code'),
+                        Forms\Components\Textarea::make('description')
+                            ->required()
+                            ->rows(4)
+                            ->columnSpanFull(),
+                        Forms\Components\TextInput::make('sort_order')
+                            ->numeric()
+                            ->default(0),
+                    ])
+                    ->columns(2),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->reorderable('sort_order')
+            ->defaultSort('sort_order')
+            ->columns([
+                Tables\Columns\TextColumn::make('title')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('icon')
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('sort_order')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                //
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListCohortActivities::route('/'),
+            'create' => Pages\CreateCohortActivity::route('/create'),
+            'edit' => Pages\EditCohortActivity::route('/{record}/edit'),
+        ];
+    }
+}
