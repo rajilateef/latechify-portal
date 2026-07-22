@@ -29,7 +29,7 @@ class SettingsSeeder extends Seeder
                 'contact_phone2'    => '08175412933',
                 'contact_email'     => 'latechifydh@gmail.com',
                 'whatsapp_number'   => '2348064539275',
-                'notification_email'=> 'latechhub23@gmail.com',
+                'notification_email'=> 'edutal26@gmail.com',
                 'business_hours'    => "Monday - Friday: 9:00 AM - 5:00 PM|Saturday: 12:00 PM - 5:00 PM|Sunday: Closed",
                 'map_embed_url'     => 'https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d31650.449093879663!2d3.8969833222289862!3d7.431335832084319!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sng!4v1747673316883!5m2!1sen!2sng',
                 'directions_url'    => 'https://maps.google.com/maps?daddr=7.437187,3.915774',

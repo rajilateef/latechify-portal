@@ -3,6 +3,8 @@
 namespace App\Livewire;
 
 use App\Models\NewsletterSubscriber;
+use App\Notifications\GenericAdminAlert;
+use Illuminate\Support\Facades\Notification;
 use Livewire\Component;
 
 class NewsletterForm extends Component
@@ -14,7 +16,21 @@ class NewsletterForm extends Component
     {
         $this->validate(['email' => 'required|email']);
 
-        NewsletterSubscriber::firstOrCreate(['email' => $this->email]);
+        $subscriber = NewsletterSubscriber::firstOrCreate(['email' => $this->email]);
+
+        if ($subscriber->wasRecentlyCreated) {
+            try {
+                if ($to = setting('notification_email')) {
+                    Notification::route('mail', $to)->notify(new GenericAdminAlert(
+                        'New newsletter subscriber',
+                        "{$subscriber->email} subscribed to the newsletter.",
+                        route('home'),
+                    ));
+                }
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
 
         $this->reset('email');
         $this->sent = true;
