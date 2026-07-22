@@ -92,7 +92,7 @@ function initScrollProgress() {
 
 /* ── Pause decorative animations (aurora blobs, marquees) while off-screen ── */
 function initAnimationPausing() {
-    const animated = document.querySelectorAll('.aurora-blob, .marquee-track');
+    const animated = document.querySelectorAll('.aurora-blob, .marquee-track, .hero-blob');
     if (!animated.length || !('IntersectionObserver' in window)) return;
 
     const po = new IntersectionObserver((entries) => {

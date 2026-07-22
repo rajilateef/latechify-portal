@@ -50,19 +50,19 @@
     <header x-data="{ open: false }"
             class="fixed inset-x-0 z-50 bg-white transition-all duration-300"
             :class="scrolled ? 'top-0 shadow-md py-3' : 'md:top-9 top-0 py-4'">
-        <div class="container-custom relative flex items-center justify-between gap-4">
+        <div class="container-custom flex items-center justify-between gap-4">
             {{-- Logo (left) --}}
             <a href="{{ route('home') }}" class="flex items-center shrink-0">
                 <img src="{{ media_url(setting('logo'), 'assets/imgs/latechify_logo.png') }}" alt="{{ setting('site_name') }}" class="h-12 md:h-14 w-auto">
             </a>
 
-            {{-- Centered menu (desktop) — managed from Admin → Settings → Navbar Menu --}}
-            <nav class="hidden lg:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
+            {{-- Menu (desktop) — managed from Admin → Settings → Navbar Menu --}}
+            <nav class="hidden lg:flex items-center gap-1">
                 @foreach ($menuItems as $item)
                     @php $linkClass = $item->highlight ? 'font-semibold text-primary hover:text-primary-100' : 'font-medium text-gray-700 hover:text-primary'; @endphp
                     @if ($item->type === 'services')
                         <div class="relative" x-data="{ o: false }" @mouseenter="o = true" @mouseleave="o = false">
-                            <a href="{{ $item->url }}" class="px-3 py-2 text-sm {{ $linkClass }} transition-colors flex items-center gap-1">{{ $item->label }} <x-lucide name="ChevronDown" class="w-4 h-4"/></a>
+                            <a href="{{ $item->url }}" class="px-3 py-2 text-sm {{ $linkClass }} transition-colors flex items-center gap-1 whitespace-nowrap">{{ $item->label }} <x-lucide name="ChevronDown" class="w-4 h-4"/></a>
                             <div x-show="o" x-transition x-cloak class="absolute left-0 top-full w-56 bg-white shadow-lg rounded-lg border py-2">
                                 @foreach ($navServices as $svc)
                                     <a href="{{ route('services') }}#{{ $svc->slug }}" class="block px-4 py-2 text-sm text-gray-600 hover:bg-primary/5 hover:text-primary">{{ $svc->title }}</a>
@@ -71,7 +71,7 @@
                         </div>
                     @elseif ($item->type === 'courses')
                         <div class="relative" x-data="{ o: false }" @mouseenter="o = true" @mouseleave="o = false">
-                            <a href="{{ $item->url }}" class="px-3 py-2 text-sm {{ $linkClass }} transition-colors flex items-center gap-1">{{ $item->label }} <x-lucide name="ChevronDown" class="w-4 h-4"/></a>
+                            <a href="{{ $item->url }}" class="px-3 py-2 text-sm {{ $linkClass }} transition-colors flex items-center gap-1 whitespace-nowrap">{{ $item->label }} <x-lucide name="ChevronDown" class="w-4 h-4"/></a>
                             <div x-show="o" x-transition x-cloak class="absolute left-0 top-full w-64 bg-white shadow-lg rounded-lg border py-2">
                                 @foreach ($navCourses as $c)
                                     <a href="{{ route('courses.show', $c->slug) }}" class="block px-4 py-2 text-sm text-gray-600 hover:bg-primary/5 hover:text-primary">{{ $c->title }}</a>
@@ -79,7 +79,7 @@
                             </div>
                         </div>
                     @else
-                        <a href="{{ $item->url }}" class="px-3 py-2 text-sm {{ $linkClass }} transition-colors flex items-center gap-1.5">
+                        <a href="{{ $item->url }}" class="px-3 py-2 text-sm {{ $linkClass }} transition-colors flex items-center gap-1.5 whitespace-nowrap">
                             @if ($item->icon)<x-lucide :name="$item->icon" class="w-4 h-4"/>@endif {{ $item->label }}
                         </a>
                     @endif
@@ -89,9 +89,9 @@
             {{-- Right cluster: WhatsApp + Enrol (desktop) + mobile toggle --}}
             <div class="flex items-center gap-2 shrink-0">
                 <a href="https://wa.me/{{ $whatsapp }}" target="_blank" rel="noopener"
-                   class="hidden lg:inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#1ebe5b] text-white px-4 py-2.5 rounded-lg shadow-md shadow-green-500/20 text-sm font-medium transition-all">
-                    <x-social-icon network="whatsapp" class="w-4 h-4 shrink-0"/>
-                    <span class="hidden xl:inline">Chat WhatsApp</span>
+                   class="hidden lg:inline-flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-[#1ebe5b] transition-colors whitespace-nowrap">
+                    <x-social-icon network="whatsapp" class="w-5 h-5 text-[#25D366] shrink-0"/>
+                    <span class="hidden xl:inline">Let's chat</span>
                 </a>
 
                 <a href="{{ route('apply') }}" class="btn-shine hidden lg:inline-flex items-center bg-gradient-to-r from-primary to-[#1a3ad4] hover:from-[#1a3ad4] hover:to-primary text-white px-5 py-2.5 rounded-lg shadow-md shadow-primary/20 text-sm font-medium transition-all whitespace-nowrap">
