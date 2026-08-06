@@ -206,6 +206,19 @@
 .marquee:hover .marquee-track { animation-play-state: paused; }
 @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(calc(-50% - .75rem)); } }
 
+/* Vertical testimonial columns (content duplicated x2 → -50% loops seamlessly) */
+.vscroll-mask {
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+}
+.vscroll-track {
+    animation: vscroll var(--vscroll-duration, 24s) linear infinite;
+    will-change: transform;
+}
+.vscroll:hover .vscroll-track { animation-play-state: paused; }
+@keyframes vscroll { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+@media (prefers-reduced-motion: reduce) { .vscroll-track { animation: none !important; } }
+
 /* Morphing organic "blob" frame (hero image) */
 .hero-blob {
     border-radius: 62% 38% 41% 59% / 54% 46% 54% 46%;
@@ -224,6 +237,11 @@
 /* Floating + aurora blobs */
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
 .animate-float { animation: float 6s ease-in-out infinite; }
+
+/* Slowly rotating halo ring around the oval hero image */
+@keyframes hero-orbit { to { transform: rotate(360deg); } }
+.hero-orbit { animation: hero-orbit 32s linear infinite; will-change: transform; }
+@media (prefers-reduced-motion: reduce) { .hero-orbit, .animate-float { animation: none !important; } }
 
 /* Translate-ONLY (no scale): scaling a blurred layer re-rasterizes the blur
    every frame and janks scrolling; translating a promoted layer is free. */

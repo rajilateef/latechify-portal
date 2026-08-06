@@ -1,5 +1,43 @@
 import './bootstrap';
 import { createIcons, icons } from 'lucide';
+import { initBlackHole } from './blackhole';
+
+/* ── Black hole hero background (WebGL) ── */
+const blackHoleCleanups = [];
+function initBlackHoleAll() {
+    document.querySelectorAll('[data-blackhole]').forEach((host) => {
+        if (host.__bhInit) return;
+        const canvas = host.querySelector('canvas');
+        if (!canvas) return;
+        host.__bhInit = true;
+        const d = host.dataset;
+        const narrow = typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 767px)').matches;
+        // Pick the mobile variant of an attribute when narrow, else the base.
+        const pick = (base) => (narrow && d[base + 'Mobile'] !== undefined ? d[base + 'Mobile'] : d[base]);
+        const opts = {};
+        const focus = pick('focus');
+        if (focus) opts.focus = focus.split(',').map(Number);
+        const scrim = pick('scrim'); if (scrim) opts.scrim = scrim;
+        if (d.scrimStrength) opts.scrimStrength = +d.scrimStrength;
+        if (d.elevation) opts.elevation = +d.elevation;
+        const fov = pick('fov'); if (fov) opts.fov = +fov;
+        const steps = pick('steps'); if (steps) opts.steps = +steps;
+        const resolution = pick('resolution'); if (resolution) opts.resolution = +resolution;
+        if (d.distance) opts.distance = +d.distance;
+        try {
+            blackHoleCleanups.push(initBlackHole(host, canvas, opts));
+        } catch (e) {
+            host.dataset.webgl = 'error';
+            canvas.style.display = 'none';
+        }
+    });
+}
+// Tear down before a Livewire SPA navigation swaps the DOM.
+document.addEventListener('livewire:navigating', () => {
+    while (blackHoleCleanups.length) {
+        try { blackHoleCleanups.pop()(); } catch (e) { /* ignore */ }
+    }
+});
 
 window.renderIcons = () => {
     try {
@@ -92,7 +130,7 @@ function initScrollProgress() {
 
 /* ── Pause decorative animations (aurora blobs, marquees) while off-screen ── */
 function initAnimationPausing() {
-    const animated = document.querySelectorAll('.aurora-blob, .marquee-track, .hero-blob');
+    const animated = document.querySelectorAll('.aurora-blob, .marquee-track, .hero-blob, .vscroll-track');
     if (!animated.length || !('IntersectionObserver' in window)) return;
 
     const po = new IntersectionObserver((entries) => {
@@ -109,6 +147,7 @@ function boot() {
     initMotion();
     initScrollProgress();
     initAnimationPausing();
+    initBlackHoleAll();
 }
 
 document.addEventListener('DOMContentLoaded', boot);
