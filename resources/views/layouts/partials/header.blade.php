@@ -152,8 +152,8 @@
                     <x-lucide name="GraduationCap" class="w-4 h-4"/> Student Login
                 </a>
 
-                <a href="{{ route('checkout') }}" class="btn-shine hidden lg:inline-flex items-center gap-1.5 bg-gradient-to-r from-primary to-[#1a3ad4] hover:from-[#1a3ad4] hover:to-primary text-white px-5 py-2.5 rounded-lg shadow-md shadow-primary/20 text-sm font-medium transition-all whitespace-nowrap">
-                    <x-lucide name="ShoppingCart" class="w-4 h-4"/> {{ setting('cta_label', 'Checkout') }}
+                <a href="{{ route('courses.index') }}" class="btn-shine hidden lg:inline-flex items-center gap-1.5 bg-gradient-to-r from-primary to-[#1a3ad4] hover:from-[#1a3ad4] hover:to-primary text-white px-5 py-2.5 rounded-lg shadow-md shadow-primary/20 text-sm font-medium transition-all whitespace-nowrap">
+                    {{ setting('cta_label', 'Enrol Today') }} <x-lucide name="ArrowRight" class="w-4 h-4"/>
                 </a>
 
                 {{-- Mobile toggle --}}
@@ -209,7 +209,7 @@
                 <a href="https://wa.me/{{ $whatsapp }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 bg-[#25D366] text-white py-3 rounded-lg text-sm font-medium">
                     <x-social-icon network="whatsapp" class="w-4 h-4"/> WhatsApp
                 </a>
-                <a href="{{ route('checkout') }}" class="inline-flex items-center justify-center gap-1.5 text-center bg-gradient-to-r from-primary to-[#1a3ad4] text-white py-3 rounded-lg text-sm font-medium"><x-lucide name="ShoppingCart" class="w-4 h-4"/> {{ setting('cta_label', 'Checkout') }}</a>
+                <a href="{{ route('courses.index') }}" class="inline-flex items-center justify-center gap-1.5 text-center bg-gradient-to-r from-primary to-[#1a3ad4] text-white py-3 rounded-lg text-sm font-medium">{{ setting('cta_label', 'Enrol Today') }} <x-lucide name="ArrowRight" class="w-4 h-4"/></a>
             </div>
         </div>
     </header>

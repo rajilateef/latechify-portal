@@ -7,8 +7,9 @@
 @source '../../app/Livewire/**/*.php';
 
 @theme {
-    /* Fonts */
-    --font-sans: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    /* Fonts — Inter carries body/UI text, Poppins stays on headings */
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-inter: 'Inter', ui-sans-serif, system-ui, sans-serif;
     --font-poppins: 'Poppins', sans-serif;
     --font-playfair: '"Playfair Display"', serif;
     --font-satisfy: 'Satisfy', cursive;
@@ -54,9 +55,15 @@
 @layer base {
     body {
         @apply bg-background text-foreground;
-        font-family: 'Poppins', sans-serif;
+        font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+        /* Inter ships optical sizing + contextual alternates; both improve small text. */
+        font-optical-sizing: auto;
+        font-feature-settings: 'cv11', 'ss01';
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
+    /* Headings keep Poppins so the brand's display voice is unchanged. */
     h1, h2, h3, h4, h5, h6 {
         @apply font-bold tracking-tight;
         font-family: 'Poppins', sans-serif;
@@ -81,6 +88,7 @@
     background-image: linear-gradient(to right, var(--color-primary), #2563eb);
 }
 
+.font-inter { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
 .font-poppins { font-family: 'Poppins', sans-serif; }
 .font-playfair { font-family: 'Playfair Display', serif; }
 

@@ -19,7 +19,7 @@ class SettingsSeeder extends Seeder
                 'brand_badge_title'=> 'Latechify',
                 'brand_badge_sub'  => 'Digital Hub',
                 'footer_about'     => 'Empowering individuals and businesses with cutting-edge digital skills and solutions for the modern world.',
-                'cta_label'        => 'Checkout',
+                'cta_label'        => 'Enrol Today',
             ],
             // ── Contact ──
             'contact' => [
