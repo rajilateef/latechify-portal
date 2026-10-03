@@ -6,7 +6,7 @@
                 <h2 class="mb-4">{{ setting('contact_cta_heading', 'Ready to Start Your Tech Journey?') }}</h2>
                 <p class="text-white/80 text-lg mb-8">{{ setting('contact_cta_sub', "Join our community of learners and professionals. Enrol in a course, request a custom digital solution, or simply reach out — we're here to help.") }}</p>
                 <div class="flex flex-wrap gap-4">
-                    <a href="{{ route('apply') }}" class="inline-flex items-center gap-2 bg-white text-primary hover:bg-white/90 px-7 py-3.5 rounded-lg font-medium transition-colors">Enrol Today <x-lucide name="ArrowRight" class="w-4 h-4"/></a>
+                    <a href="{{ route('checkout') }}" class="inline-flex items-center gap-2 bg-white text-primary hover:bg-white/90 px-7 py-3.5 rounded-lg font-medium transition-colors">Enrol Today <x-lucide name="ArrowRight" class="w-4 h-4"/></a>
                     <a href="{{ route('contact') }}" class="inline-flex items-center gap-2 border border-white/40 text-white hover:bg-white/10 px-7 py-3.5 rounded-lg font-medium transition-colors">Contact Us</a>
                 </div>
             </div>

@@ -51,7 +51,7 @@
 
                             <div class="mt-9 flex flex-wrap items-center gap-3">
                                 @if ($slide->button_text)
-                                    <a href="{{ $slide->button_link ?: route('apply') }}"
+                                    <a href="{{ $slide->button_link ?: route('checkout') }}"
                                        class="btn-shine group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-medium text-black transition hover:bg-white/90">
                                         {{ $slide->button_text }}
                                         <x-lucide name="ArrowRight" class="w-4 h-4 group-hover:translate-x-1 transition-transform"/>

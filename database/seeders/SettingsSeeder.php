@@ -19,7 +19,7 @@ class SettingsSeeder extends Seeder
                 'brand_badge_title'=> 'Latechify',
                 'brand_badge_sub'  => 'Digital Hub',
                 'footer_about'     => 'Empowering individuals and businesses with cutting-edge digital skills and solutions for the modern world.',
-                'cta_label'        => 'Enrol Today 👍',
+                'cta_label'        => 'Checkout',
             ],
             // ── Contact ──
             'contact' => [
@@ -112,6 +112,15 @@ class SettingsSeeder extends Seeder
                 'contact_cta_heading'  => 'Ready to Start Your Tech Journey?',
                 'contact_cta_sub'      => "Join our community of learners and professionals. Enrol in a course, request a custom digital solution, or simply reach out — we're here to help.",
             ],
+            // ── Receipts ──
+            'receipts' => [
+                'receipt_prefix'       => 'RCP',
+                'receipt_title'        => 'RECEIPT',
+                'receipt_accent_color' => '#031273',
+                'receipt_signatory'    => 'Accounts Department',
+                'receipt_footer'       => 'Thank you for your payment. This is a computer-generated receipt and is valid without a physical signature.',
+            ],
+
             // ── SEO ──
             'seo' => [
                 'meta_title'       => 'Latechify Digital Hub - Your Tech Training & Digital Solutions Partner',

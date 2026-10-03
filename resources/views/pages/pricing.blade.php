@@ -72,8 +72,18 @@
                             <h3 class="text-xl font-bold text-gray-900 mb-3">{{ $course->title }}</h3>
 
                             <div class="mb-4">
-                                <span class="text-4xl font-bold text-primary" x-show="tab==='physical'">₦{{ number_format($course->price_physical) }}</span>
-                                <span class="text-4xl font-bold text-primary" x-show="tab==='online'" x-cloak>₦{{ number_format($course->price_online) }}</span>
+                                <span x-show="tab==='physical'">
+                                    <x-price size="xl"
+                                             :amount="$course->payablePriceFor('physical')"
+                                             :was="$course->hasDiscountFor('physical') ? $course->priceFor('physical') : null"
+                                             :percent="$course->discountPercentFor('physical')"/>
+                                </span>
+                                <span x-show="tab==='online'" x-cloak>
+                                    <x-price size="xl"
+                                             :amount="$course->payablePriceFor('online')"
+                                             :was="$course->hasDiscountFor('online') ? $course->priceFor('online') : null"
+                                             :percent="$course->discountPercentFor('online')"/>
+                                </span>
                             </div>
 
                             <div class="flex items-center gap-1.5 text-sm font-medium text-primary mb-5">
@@ -104,10 +114,10 @@
                                         ? $btnBase.' bg-gradient-to-r from-primary to-[#1a3ad4] hover:opacity-90 text-white'
                                         : $btnBase.' bg-primary hover:bg-primary/90 text-white';
                                 @endphp
-                                <a x-show="tab==='physical'" href="{{ route('apply', ['course' => $course->slug, 'format' => 'physical']) }}" class="{{ $btnClass }}">
+                                <a x-show="tab==='physical'" href="{{ $course->checkoutUrl('physical') }}" class="{{ $btnClass }}">
                                     Register Now <x-lucide name="ArrowRight" class="w-4 h-4"/>
                                 </a>
-                                <a x-show="tab==='online'" x-cloak href="{{ route('apply', ['course' => $course->slug, 'format' => 'online']) }}" class="{{ $btnClass }}">
+                                <a x-show="tab==='online'" x-cloak href="{{ $course->checkoutUrl('online') }}" class="{{ $btnClass }}">
                                     Register Now <x-lucide name="ArrowRight" class="w-4 h-4"/>
                                 </a>
                             </div>

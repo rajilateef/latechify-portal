@@ -32,6 +32,7 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::hex('#031273'),
             ])
             ->navigationGroups([
+                'Training Portal',
                 'Home Page',
                 'Courses & Services',
                 'About & Content',
@@ -45,8 +46,13 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                \App\Filament\Widgets\StatsOverview::class,
                 Widgets\AccountWidget::class,
+                \App\Filament\Widgets\StatsOverview::class,
+                \App\Filament\Widgets\PortalStatsOverview::class,
+                \App\Filament\Widgets\RevenueChart::class,
+                \App\Filament\Widgets\EnrollmentTrendChart::class,
+                \App\Filament\Widgets\PendingCheckoutsWidget::class,
+                \App\Filament\Widgets\PendingActivationsWidget::class,
             ])
             ->plugin(\TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin::make())
             // "Back to Media Library" link when browsing inside a folder.

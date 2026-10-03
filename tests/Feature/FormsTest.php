@@ -2,11 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Livewire\ApplyForm;
 use App\Livewire\CampRegistrationForm;
 use App\Livewire\ContactForm;
 use App\Livewire\VerifyCertificate;
-use App\Models\Application;
 use App\Models\CampRegistration;
 use App\Models\ContactMessage;
 use App\Models\Course;
@@ -40,38 +38,29 @@ class FormsTest extends TestCase
         ]);
     }
 
-    public function test_apply_form_creates_application_and_redirects_to_bank_transfer_when_paystack_unconfigured(): void
+    /* ── The apply/Paystack flow was retired on 2026-10-01 — it now redirects into Checkout. ── */
+
+    public function test_the_retired_apply_url_redirects_to_checkout(): void
     {
-        $course = Course::where('slug', 'frontend-web-development')->first();
-
-        Livewire::test(ApplyForm::class, ['selectedSlug' => $course->slug, 'classFormat' => 'online'])
-            ->set('full_name', 'John Applicant')
-            ->set('email', 'john@example.com')
-            ->set('phone', '08012345678')
-            ->set('education', 'bachelor')
-            ->set('experience', 'beginner')
-            ->set('motivation', 'I am very motivated to transition into a tech career and build products.')
-            ->set('heard_about', 'social')
-            ->set('payment_method', 'paystack')
-            ->call('submit')
-            ->assertHasNoErrors()
-            ->assertRedirect(); // Paystack unconfigured → falls back to bank transfer
-
-        $app = Application::where('email', 'john@example.com')->first();
-        $this->assertNotNull($app);
-        $this->assertSame($course->id, $app->course_id);
-        $this->assertSame($course->price_online, $app->price);
-        $this->assertSame('pending', $app->status);
+        $this->get('/apply')->assertRedirect(route('checkout'));
     }
 
-    public function test_apply_form_validates_required_fields(): void
+    public function test_the_retired_apply_url_carries_the_course_through_to_checkout(): void
     {
-        Livewire::test(ApplyForm::class)
-            ->set('full_name', '')
-            ->set('email', 'not-an-email')
-            ->set('motivation', 'too short')
-            ->call('submit')
-            ->assertHasErrors(['full_name', 'email', 'motivation']);
+        $course = Course::where('slug', 'frontend-web-development')->firstOrFail();
+
+        $this->get('/apply?course='.$course->slug)
+            ->assertRedirect(route('checkout', ['course' => $course->slug]));
+    }
+
+    public function test_an_unknown_course_on_the_retired_url_still_lands_on_checkout(): void
+    {
+        $this->get('/apply?course=does-not-exist')->assertRedirect(route('checkout'));
+    }
+
+    public function test_no_new_applications_can_be_created(): void
+    {
+        $this->assertFalse(\App\Filament\Resources\ApplicationResource::canCreate());
     }
 
     public function test_camp_registration_manual_creates_registration_and_redirects(): void
@@ -99,12 +88,16 @@ class FormsTest extends TestCase
         $this->assertNotNull($reg->uuid);
     }
 
-    public function test_camp_webhook_rejects_unsigned_requests(): void
+    public function test_an_unverified_camp_webhook_cannot_mark_a_registration_paid(): void
     {
+        // The endpoint accepts unsigned calls, but confirmation is re-checked with
+        // Monnify — see MonnifyWebhookTest for the full contract.
         $this->postJson('/summer-coding-camp/payment/webhook', [
             'eventType' => 'SUCCESSFUL_TRANSACTION',
-            'eventData' => ['paymentReference' => 'CAMP-1-ABC', 'paymentStatus' => 'PAID', 'amountPaid' => 70000],
-        ])->assertStatus(401);
+            'eventData' => ['paymentReference' => 'LATECHIFY-CAMP-1-ABC', 'paymentStatus' => 'PAID', 'amountPaid' => 70000],
+        ])->assertOk();
+
+        $this->assertDatabaseMissing('camp_registrations', ['status' => 'paid']);
     }
 
     public function test_camp_registration_validates_required_fields(): void

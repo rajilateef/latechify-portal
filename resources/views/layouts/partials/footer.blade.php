@@ -42,7 +42,7 @@
                 <h3 class="text-lg font-semibold mb-6">Resources</h3>
                 <ul class="space-y-3 text-gray-400">
                     <li><a href="{{ route('consultation') }}" class="hover:text-white transition-colors">Free Consultation</a></li>
-                    <li><a href="{{ route('apply') }}" class="hover:text-white transition-colors">Apply Now</a></li>
+                    <li><a href="{{ route('checkout') }}" class="hover:text-white transition-colors">Checkout</a></li>
                     <li><a href="{{ route('verify-certificate') }}" class="hover:text-white transition-colors">Verify Certificate</a></li>
                     <li><a href="{{ route('terms') }}" class="hover:text-white transition-colors">Terms of Service</a></li>
                     <li><a href="{{ route('privacy') }}" class="hover:text-white transition-colors">Privacy Policy</a></li>

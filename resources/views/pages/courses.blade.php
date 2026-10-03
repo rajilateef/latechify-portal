@@ -97,21 +97,35 @@
 
                                     <div class="grid grid-cols-2 gap-3 mb-5 mt-auto">
                                         <div class="rounded-lg border border-border bg-white px-4 py-3">
-                                            <div class="text-xs text-muted-foreground mb-1">Physical</div>
-                                            <div class="text-lg font-bold text-gray-900">&#8358;{{ number_format($course->price_physical) }}</div>
+                                            <div class="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+                                                Physical
+                                                @if ($course->hasDiscountFor('physical'))
+                                                    <span class="rounded bg-green-100 px-1.5 py-px text-[10px] font-bold text-green-700">-{{ $course->discountPercentFor('physical') }}%</span>
+                                                @endif
+                                            </div>
+                                            <x-price size="sm" tone="dark"
+                                                     :amount="$course->payablePriceFor('physical')"
+                                                     :was="$course->hasDiscountFor('physical') ? $course->priceFor('physical') : null"/>
                                         </div>
                                         <div class="rounded-lg border border-green-200 bg-green-50 px-4 py-3">
-                                            <div class="text-xs text-green-700 mb-1">Online</div>
-                                            <div class="text-lg font-bold text-green-600">&#8358;{{ number_format($course->price_online) }}</div>
+                                            <div class="flex items-center gap-1.5 text-xs text-green-700 mb-1">
+                                                Online
+                                                @if ($course->hasDiscountFor('online'))
+                                                    <span class="rounded bg-green-200 px-1.5 py-px text-[10px] font-bold text-green-800">-{{ $course->discountPercentFor('online') }}%</span>
+                                                @endif
+                                            </div>
+                                            <x-price size="sm" tone="green"
+                                                     :amount="$course->payablePriceFor('online')"
+                                                     :was="$course->hasDiscountFor('online') ? $course->priceFor('online') : null"/>
                                         </div>
                                     </div>
 
                                     <div class="grid grid-cols-2 gap-3">
-                                        <a href="{{ route('apply', ['course' => $course->slug, 'format' => 'physical']) }}"
+                                        <a href="{{ $course->checkoutUrl('physical') }}"
                                            class="btn-shine inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-4 py-2.5 rounded-lg font-medium transition-colors">
                                             Physical <x-lucide name="ArrowRight" class="w-4 h-4"/>
                                         </a>
-                                        <a href="{{ route('apply', ['course' => $course->slug, 'format' => 'online']) }}"
+                                        <a href="{{ $course->checkoutUrl('online') }}"
                                            class="inline-flex items-center justify-center gap-2 border border-primary text-primary hover:bg-primary/5 px-4 py-2.5 rounded-lg font-medium transition-colors">
                                             Online <x-lucide name="ArrowRight" class="w-4 h-4"/>
                                         </a>
@@ -143,7 +157,7 @@
                         <a href="{{ route('consultation') }}" class="btn-shine inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg font-medium transition-colors">
                             <x-lucide name="Calendar" class="w-5 h-5"/> Schedule Consultation
                         </a>
-                        <a href="{{ route('apply') }}" class="inline-flex items-center gap-2 border border-primary text-primary hover:bg-primary/5 px-6 py-3 rounded-lg font-medium transition-colors">
+                        <a href="{{ route('checkout') }}" class="inline-flex items-center gap-2 border border-primary text-primary hover:bg-primary/5 px-6 py-3 rounded-lg font-medium transition-colors">
                             Apply Now <x-lucide name="ArrowRight" class="w-5 h-5"/>
                         </a>
                     </div>

@@ -38,6 +38,25 @@ class CourseResource extends Resource
                         ->default('Software Engineering')
                         ->native(false)
                         ->required(),
+                    Forms\Components\Select::make('training_program_id')
+                        ->label('Portal program')
+                        ->relationship('trainingProgram', 'name')
+                        ->searchable()->preload()->native(false)
+                        ->helperText('The training program this course enrols into. Without one the course cannot be bought at checkout — create it here if it does not exist yet.')
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make('name')->required()
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(fn ($state, Forms\Set $set) => $set('slug', Str::slug((string) $state))),
+                            Forms\Components\TextInput::make('slug')->required()->unique('training_programs', 'slug'),
+                            Forms\Components\Textarea::make('description')->rows(2)->columnSpanFull(),
+                            Forms\Components\TextInput::make('duration_weeks')->numeric()->default(12)->required()->label('Duration (weeks)'),
+                            Forms\Components\TextInput::make('fee')->numeric()->prefix('₦')->default(0)->required()->label('Full-time fee'),
+                            Forms\Components\TextInput::make('siwes_fee')->numeric()->prefix('₦')->default(0)->label('IT / SIWES fee')
+                                ->helperText('Leave 0 to charge the full-time fee.'),
+                            Forms\Components\Toggle::make('is_active')->default(true)->label('Sellable at checkout'),
+                        ])
+                        ->createOptionModalHeading('New portal program')
+                        ->columnSpanFull(),
                     Forms\Components\TextInput::make('subtitle')->columnSpanFull(),
                     Forms\Components\Textarea::make('description')->label('Short description (catalog card)')->rows(2)->columnSpanFull(),
                     Forms\Components\RichEditor::make('long_description')->label('About this course')->columnSpanFull(),
@@ -52,8 +71,18 @@ class CourseResource extends Resource
                 ])->columns(2),
 
                 Forms\Components\Tabs\Tab::make('Pricing & Flags')->schema([
-                    Forms\Components\TextInput::make('price_physical')->numeric()->prefix('₦')->default(0)->label('Physical price'),
-                    Forms\Components\TextInput::make('price_online')->numeric()->prefix('₦')->default(0)->label('Online price'),
+                    Forms\Components\TextInput::make('price_physical')->numeric()->prefix('₦')->default(0)->label('Physical price')
+                        ->helperText('The normal price. Shown struck through when a discount is set.'),
+                    Forms\Components\TextInput::make('price_online')->numeric()->prefix('₦')->default(0)->label('Online price')
+                        ->helperText('The normal price. Shown struck through when a discount is set.'),
+                    Forms\Components\TextInput::make('discount_price_physical')->numeric()->prefix('₦')->label('Discounted physical price')
+                        ->placeholder('No discount')
+                        ->lt('price_physical')
+                        ->helperText('Leave blank for no discount. Must be lower than the physical price.'),
+                    Forms\Components\TextInput::make('discount_price_online')->numeric()->prefix('₦')->label('Discounted online price')
+                        ->placeholder('No discount')
+                        ->lt('price_online')
+                        ->helperText('Leave blank for no discount. Must be lower than the online price.'),
                     Forms\Components\TextInput::make('popular_feature')->label('Highlight line (pricing card)')->columnSpanFull(),
                     Forms\Components\Toggle::make('popular')->label('Popular'),
                     Forms\Components\Toggle::make('featured')->label('Featured on home'),
@@ -140,8 +169,14 @@ class CourseResource extends Resource
                 Tables\Columns\TextColumn::make('category')->badge()->toggleable(),
                 Tables\Columns\TextColumn::make('level')->toggleable(),
                 Tables\Columns\TextColumn::make('duration')->toggleable(),
-                Tables\Columns\TextColumn::make('price_physical')->money('NGN')->label('Physical')->sortable(),
-                Tables\Columns\TextColumn::make('price_online')->money('NGN')->label('Online')->sortable(),
+                Tables\Columns\TextColumn::make('price_physical')->money('NGN')->label('Physical')->sortable()
+                    ->description(fn (Course $r) => $r->hasDiscountFor('physical')
+                        ? 'now ₦'.number_format($r->payablePriceFor('physical')).' (-'.$r->discountPercentFor('physical').'%)'
+                        : null),
+                Tables\Columns\TextColumn::make('price_online')->money('NGN')->label('Online')->sortable()
+                    ->description(fn (Course $r) => $r->hasDiscountFor('online')
+                        ? 'now ₦'.number_format($r->payablePriceFor('online')).' (-'.$r->discountPercentFor('online').'%)'
+                        : null),
                 Tables\Columns\IconColumn::make('popular')->boolean(),
                 Tables\Columns\ToggleColumn::make('featured'),
                 Tables\Columns\ToggleColumn::make('is_active')->label('Active'),

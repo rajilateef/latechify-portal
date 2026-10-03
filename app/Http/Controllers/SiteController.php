@@ -11,7 +11,6 @@ use App\Models\Milestone;
 use App\Models\Page;
 use App\Models\Service;
 use App\Models\Stat;
-use Illuminate\Http\Request;
 
 class SiteController extends Controller
 {
@@ -54,15 +53,6 @@ class SiteController extends Controller
     public function verifyCertificate()
     {
         return view('pages.verify-certificate');
-    }
-
-    public function apply(Request $request)
-    {
-        return view('pages.apply', [
-            'courses'      => Course::active()->get(),
-            'selectedSlug' => $request->query('course'),
-            'classFormat'  => $request->query('format', 'online'),
-        ]);
     }
 
     public function legal(string $slug)

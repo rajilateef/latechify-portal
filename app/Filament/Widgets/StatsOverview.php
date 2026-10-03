@@ -2,27 +2,39 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Application;
+use App\Models\CheckoutOrder;
 use App\Models\ContactMessage;
 use App\Models\Course;
-use App\Models\Payment;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class StatsOverview extends BaseWidget
 {
+    protected ?string $heading = 'Website & sales';
+
+    protected static ?int $sort = 1;
+
+    protected int|string|array $columnSpan = 'full';
+
     protected function getStats(): array
     {
-        $revenue = Payment::whereIn('status', ['success', 'verified'])->sum('amount');
+        $enrolments = CheckoutOrder::where('kind', 'enrolment');
+
+        $started = (clone $enrolments)->count();
+        $awaiting = (clone $enrolments)->where('status', 'paid')->count();
+        $confirmed = (clone $enrolments)->where('status', 'confirmed')->count();
+
+        // Money actually taken through checkout (paid, whether or not it's confirmed yet).
+        $revenue = (int) CheckoutOrder::whereIn('status', ['paid', 'confirmed'])->sum('amount');
 
         return [
-            Stat::make('Applications', Application::count())
-                ->description(Application::where('status', 'pending')->count().' pending')
-                ->descriptionIcon('heroicon-m-inbox-arrow-down')
-                ->color('warning'),
+            Stat::make('Checkout orders', $started)
+                ->description($awaiting ? $awaiting.' awaiting confirmation' : 'None awaiting confirmation')
+                ->descriptionIcon('heroicon-m-shopping-cart')
+                ->color($awaiting ? 'warning' : 'gray'),
 
-            Stat::make('Paid enrollments', Application::where('status', 'paid')->count())
-                ->description('₦'.number_format($revenue).' collected')
+            Stat::make('Portals opened', $confirmed)
+                ->description('₦'.number_format($revenue).' taken at checkout')
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('success'),
 

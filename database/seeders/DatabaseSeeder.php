@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
                 'last_name'  => 'Admin',
                 'password'   => Hash::make('password'),
                 'is_admin'   => true,
+                'is_active'  => true,
             ]
         );
 
@@ -42,6 +43,7 @@ class DatabaseSeeder extends Seeder
             PartnerSeeder::class,
             CertificateSeeder::class,
             CourseCategorySeeder::class,
+            TrainingSeeder::class,
         ]);
     }
 }

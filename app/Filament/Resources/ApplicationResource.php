@@ -12,21 +12,37 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+/**
+ * ARCHIVE. The public apply/Paystack flow was retired on 2026-10-01 in favour of
+ * Checkout (see CheckoutOrderResource). Nothing creates applications any more —
+ * this resource exists so the historical records stay readable and editable.
+ */
 class ApplicationResource extends Resource
 {
     protected static ?string $model = Application::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-inbox-arrow-down';
+    protected static ?string $navigationIcon = 'heroicon-o-archive-box';
 
     protected static ?string $navigationGroup = 'Submissions';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 9;
+
+    protected static ?string $navigationLabel = 'Applications (archive)';
+
+    protected static ?string $modelLabel = 'archived application';
 
     protected static ?string $recordTitleAttribute = 'full_name';
 
-    public static function getNavigationBadge(): ?string
+    /** Hide the nav entry entirely once the last legacy record is gone. */
+    public static function shouldRegisterNavigation(): bool
     {
-        return (string) static::getModel()::where('status', 'pending')->count() ?: null;
+        return static::getModel()::exists();
+    }
+
+    /** Retired flow — no new applications can be created. */
+    public static function canCreate(): bool
+    {
+        return false;
     }
 
     public static function form(Form $form): Form
@@ -106,9 +122,8 @@ class ApplicationResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListApplications::route('/'),
-            'create' => Pages\CreateApplication::route('/create'),
-            'edit'   => Pages\EditApplication::route('/{record}/edit'),
+            'index' => Pages\ListApplications::route('/'),
+            'edit'  => Pages\EditApplication::route('/{record}/edit'),
         ];
     }
 }

@@ -40,7 +40,7 @@ class ManageSettings extends Page implements HasForms
         // social
         'instagram_url' => 'social', 'facebook_url' => 'social', 'twitter_url' => 'social', 'linkedin_url' => 'social',
         // payment
-        'currency' => 'payment', 'paystack_public_key' => 'payment', 'paystack_secret_key' => 'payment',
+        'currency' => 'payment',
         'monnify_api_key' => 'payment', 'monnify_secret_key' => 'payment', 'monnify_contract_code' => 'payment', 'monnify_live' => 'payment',
         'bank_name' => 'payment', 'bank_account_name' => 'payment', 'bank_account_number' => 'payment',
         'enterprise_base_price' => 'payment', 'enterprise_price_per_student' => 'payment',
@@ -63,6 +63,9 @@ class ManageSettings extends Page implements HasForms
         'faq_heading' => 'sections', 'faq_sub' => 'sections',
         'partners_eyebrow' => 'sections', 'partners_heading' => 'sections', 'partners_sub' => 'sections',
         'contact_cta_heading' => 'sections', 'contact_cta_sub' => 'sections',
+        // receipts
+        'receipt_prefix' => 'receipts', 'receipt_title' => 'receipts', 'receipt_accent_color' => 'receipts',
+        'receipt_signatory' => 'receipts', 'receipt_signature' => 'receipts', 'receipt_footer' => 'receipts',
         // seo
         'meta_title' => 'seo', 'meta_description' => 'seo',
     ];
@@ -110,13 +113,33 @@ class ManageSettings extends Page implements HasForms
 
                 Forms\Components\Tabs\Tab::make('Payment')->schema([
                     Forms\Components\TextInput::make('currency')->default('NGN'),
-                    Forms\Components\TextInput::make('paystack_public_key')->helperText('From your Paystack dashboard (pk_...)'),
-                    Forms\Components\TextInput::make('paystack_secret_key')->password()->revealable()->helperText('From your Paystack dashboard (sk_...). Stored privately.'),
-                    Forms\Components\Placeholder::make('_monnify')->label('Monnify (Summer Camp checkout)')->content('Used for online camp payments. Leave blank to force manual/bank transfer.')->columnSpanFull(),
+                    Forms\Components\Placeholder::make('_monnify')->label('Monnify (Checkout)')
+                        ->content(function () {
+                            $monnify = app(\App\Services\Monnify::class);
+
+                            $status = $monnify->isConfigured()
+                                ? '✅ Online payment is LIVE on the website checkout ('.($monnify->isLive() ? 'live mode' : 'sandbox / test mode').').'
+                                : '⚠️ Online payment is OFF — all three fields below are required before "Pay online" appears at checkout. Visitors currently see bank transfer only.';
+
+                            return new \Illuminate\Support\HtmlString(
+                                '<strong>'.e($status).'</strong><br>'
+                                .'Powers the website Checkout, portal fee payments and Summer Camp registration. '
+                                .'Every reference we send is LATECHIFY-prefixed.'
+                            );
+                        })
+                        ->columnSpanFull(),
                     Forms\Components\TextInput::make('monnify_api_key')->label('Monnify API key'),
                     Forms\Components\TextInput::make('monnify_secret_key')->label('Monnify secret key')->password()->revealable()->helperText('Stored privately.'),
                     Forms\Components\TextInput::make('monnify_contract_code')->label('Monnify contract code'),
                     Forms\Components\Toggle::make('monnify_live')->label('Live mode')->helperText('Off = sandbox (test). On = live payments.'),
+                    Forms\Components\Placeholder::make('_monnify_webhook')->label('Webhook URL')
+                        ->content(fn () => new \Illuminate\Support\HtmlString(
+                            'Paste this into Monnify → Settings → API Keys &amp; Webhooks as the <strong>Transaction Completion</strong> URL:<br>'
+                            .'<code class="select-all font-mono text-primary-600">'.e(url('/webhooks/monnify')).'</code><br>'
+                            .'<span class="text-xs">One URL covers checkout, portal fee payments and camp registrations. '
+                            .'Deliveries are listed under Training Portal → Payment webhooks.</span>'
+                        ))
+                        ->columnSpanFull(),
                     Forms\Components\Placeholder::make('_bank')->label('Bank transfer details')->content('Shown to applicants who pay by transfer.')->columnSpanFull(),
                     Forms\Components\TextInput::make('bank_name'),
                     Forms\Components\TextInput::make('bank_account_name'),
@@ -199,12 +222,59 @@ class ManageSettings extends Page implements HasForms
                     ]),
                 ]),
 
+                Forms\Components\Tabs\Tab::make('Receipts')->schema([
+                    Forms\Components\Placeholder::make('_receipt_info')->label('Payment receipts')
+                        ->content('Customise the look of the PDF receipts issued to trainees. Business name, address, phone, email and logo are taken from the General & Contact tabs.')
+                        ->columnSpanFull(),
+                    Forms\Components\TextInput::make('receipt_title')->label('Document title')->placeholder('RECEIPT')
+                        ->helperText('Heading shown top-right, e.g. RECEIPT or PAYMENT RECEIPT.'),
+                    Forms\Components\TextInput::make('receipt_prefix')->label('Receipt number prefix')->placeholder('RCP')
+                        ->helperText('Numbers look like PREFIX-YEAR-0001. Changing this only affects new receipts.'),
+                    Forms\Components\ColorPicker::make('receipt_accent_color')->label('Accent colour')
+                        ->helperText('Used for the header, table and totals. Defaults to your brand blue.'),
+                    Forms\Components\TextInput::make('receipt_signatory')->label('Signatory name / title')
+                        ->helperText('Printed under the signature line, e.g. "Accounts Department".'),
+                    \App\Filament\Forms\Components\MediaPicker::make('receipt_signature')->label('Signature image')
+                        ->helperText('Upload a signature (PNG with a transparent background works best). Appears above the signatory on every receipt.')
+                        ->columnSpanFull(),
+                    Forms\Components\Textarea::make('receipt_footer')->label('Footer note')->rows(3)->columnSpanFull()
+                        ->helperText('Small print at the bottom of the receipt.'),
+                ])->columns(2),
+
                 Forms\Components\Tabs\Tab::make('SEO')->schema([
                     Forms\Components\TextInput::make('meta_title')->columnSpanFull(),
                     Forms\Components\Textarea::make('meta_description')->rows(2)->columnSpanFull(),
                 ]),
             ]),
         ]);
+    }
+
+    /**
+     * Prove the Monnify credentials actually work. Auth can succeed while the
+     * contract code belongs to another account, so this exercises the same call
+     * checkout makes and reports Monnify's own message.
+     */
+    public function testMonnify(): void
+    {
+        [$ok, $message] = app(\App\Services\Monnify::class)->testConnection();
+
+        Notification::make()
+            ->title($ok ? 'Monnify connected' : 'Monnify is not working yet')
+            ->body($message)
+            ->{$ok ? 'success' : 'danger'}()
+            ->persistent()
+            ->send();
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            \Filament\Actions\Action::make('testMonnify')
+                ->label('Test Monnify connection')
+                ->icon('heroicon-o-signal')
+                ->color('gray')
+                ->action('testMonnify'),
+        ];
     }
 
     public function save(): void

@@ -40,7 +40,7 @@
                 <div class="absolute inset-x-0 bottom-0 p-6 text-white text-center">
                     <h3 class="text-xl font-bold">{{ setting('cohort_name', 'Current Cohort') }}</h3>
                     <p class="text-white/80 text-sm mt-1 mb-4">{{ setting('cohort_status') }}</p>
-                    <a href="{{ route('apply') }}" class="block bg-primary hover:bg-primary/90 text-white py-2.5 rounded-lg font-medium transition-colors">Apply Now</a>
+                    <a href="{{ route('checkout') }}" class="block bg-primary hover:bg-primary/90 text-white py-2.5 rounded-lg font-medium transition-colors">Enrol Now</a>
                 </div>
             </div>
         </div>

@@ -12,8 +12,15 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         // Monnify posts server-to-server; it's authenticated by its signature, not CSRF.
+        // Monnify posts server-to-server; these are authenticated by signature, not CSRF.
         $middleware->validateCsrfTokens(except: [
+            'webhooks/monnify',
             'summer-coding-camp/payment/webhook',
+            'checkout/webhook',
+        ]);
+
+        $middleware->alias([
+            'active.student' => \App\Http\Middleware\EnsureActiveStudent::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

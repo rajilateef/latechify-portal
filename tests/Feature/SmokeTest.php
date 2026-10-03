@@ -21,7 +21,7 @@ class SmokeTest extends TestCase
     {
         $urls = [
             '/', '/about', '/services', '/pricing', '/contact', '/courses',
-            '/courses/frontend-web-development', '/apply', '/schedule-consultation',
+            '/courses/frontend-web-development', '/schedule-consultation',
             '/blog', '/terms', '/privacy', '/cookies', '/verify-certificate',
             '/summer-coding-camp',
         ];

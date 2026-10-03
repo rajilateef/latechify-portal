@@ -6,7 +6,6 @@ use App\Models\CampRegistration;
 use App\Notifications\GenericAdminAlert;
 use App\Services\Monnify;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -114,7 +113,7 @@ class CampRegistrationForm extends Component
         }
 
         if ($this->payment_method === 'monnify' && $fee > 0 && $monnify->isConfigured()) {
-            $paymentReference = 'CAMP-'.$registration->id.'-'.Str::upper(Str::random(6));
+            $paymentReference = Monnify::reference('CAMP', $registration->id);
 
             $result = $monnify->initialize(
                 $registration->full_name,

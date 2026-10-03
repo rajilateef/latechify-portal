@@ -108,10 +108,32 @@
 
                 {{-- RIGHT --}}
                 <div class="md:col-span-1">
-                    <div class="sticky top-24 rounded-xl border border-border bg-muted/30 shadow-sm p-6">
+                    <div class="sticky top-24 rounded-xl border border-border bg-muted/30 shadow-sm p-6"
+                         x-data="{ format: 'physical' }">
+                        {{-- Format picker — the choice follows through to checkout --}}
+                        <div class="mb-4">
+                            <div class="text-sm text-muted-foreground mb-2">Class format</div>
+                            <div class="grid grid-cols-2 gap-1 rounded-lg bg-gray-100 p-1">
+                                @foreach (['physical' => 'On-campus', 'online' => 'Online'] as $value => $label)
+                                    <button type="button" @click="format = '{{ $value }}'"
+                                            :class="format === '{{ $value }}' ? 'bg-white text-primary shadow-sm' : 'text-gray-500 hover:text-gray-700'"
+                                            class="rounded-md px-3 py-2 text-sm font-medium transition-colors">
+                                        {{ $label }}
+                                    </button>
+                                @endforeach
+                            </div>
+                        </div>
+
                         <div class="mb-6">
                             <div class="text-sm text-muted-foreground mb-1">Tuition</div>
-                            <div class="text-3xl font-bold text-primary">&#8358;{{ number_format($course->price_physical) }}</div>
+                            @foreach (['physical', 'online'] as $fmt)
+                                <div x-show="format === '{{ $fmt }}'" @if ($fmt !== 'physical') x-cloak @endif>
+                                    <x-price size="lg"
+                                             :amount="$course->payablePriceFor($fmt)"
+                                             :was="$course->hasDiscountFor($fmt) ? $course->priceFor($fmt) : null"
+                                             :percent="$course->discountPercentFor($fmt)"/>
+                                </div>
+                            @endforeach
                         </div>
 
                         <div class="space-y-4 mb-6">
@@ -152,7 +174,8 @@
                             </div>
                         </div>
 
-                        <a href="{{ route('apply', ['course' => $course->slug]) }}"
+                        <a :href="format === 'online' ? '{{ $course->checkoutUrl('online') }}' : '{{ $course->checkoutUrl('physical') }}'"
+                           href="{{ $course->checkoutUrl('physical') }}"
                            class="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-[#1a3ad4] text-white px-6 py-3 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-primary/20">
                             Enroll Now <x-lucide name="ArrowRight" class="w-5 h-5"/>
                         </a>
